@@ -16,7 +16,7 @@ const validate = (field) => {
 }
 
 
-const render = (elements) => (path, value, prevValue) => {
+const render = (elements) => (path, value) => {
   switch(path) {
     case 'form.validation.errors':
       renderErrors(elements, value);
