@@ -23,6 +23,7 @@ const render = (elements) => (path, value) => {
       break;
     case 'form.RSSurl.processed':
       showRSSfeed(elements, value);
+      break;
     default:
       break;
   }

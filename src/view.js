@@ -6,7 +6,7 @@ export const renderErrors = (elements, error) => {
   elements.RSSinput.classList.add('is-invalid');
 };
 
-export const showRSSfeed = (elements, URL) => {
+export const showRSSfeed = (elements) => {
   elements.form.reset();
   elements.RSSinput.focus;
   elements.feedbackEl.classList.replace('text-danger', 'text-success');
