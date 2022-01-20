@@ -2,7 +2,7 @@ import * as yup from 'yup';
 import onChange from 'on-change';
 import { renderErrors, showRSSfeed } from './view.js';
 
-const schema = yup.string().required('Please, write RSS link').url('The entered URL is not valid');
+const schema = yup.string().required().url('feedbackMsg.errors.notValid');
 const validate = (field) => {
   const errors = schema
     .validate(field)
@@ -18,11 +18,13 @@ const validate = (field) => {
 
 const render = (elements) => (path, value) => {
   switch(path) {
-    case 'form.validation.errors':
+    case 'form.validation.error':
       renderErrors(elements, value);
       break;
     case 'form.RSSurl.processed':
       showRSSfeed(elements, value);
+    default:
+      break;
   }
 };
 
@@ -39,7 +41,7 @@ export default () => {
   const state = onChange({
     form: {
       validation: {
-        errors: [],
+        error: '',
       },
       RSSurl: {
         entered: '',
@@ -56,20 +58,17 @@ export default () => {
     const errors = validate(state.form.RSSurl.entered);
     errors
       .then(function(errors) {
-        state.form.validation.errors = errors;
+        state.form.validation.error = errors.join(', ');
       })
       .then(function() {
         if(state.form.RSSurl.entered === state.form.RSSurl.processed) {
-          state.form.validation.errors = ['Such RSS already exists'];
+          state.form.validation.error = 'feedbackMsg.errors.duplication';
         }
       })
       .then(function() {
-        if(state.form.validation.errors.length === 0) {
+        if(state.form.validation.error.length === 0) {
           state.form.RSSurl.processed = state.form.RSSurl.entered;
         }
     })
-    console.log(state);
   });
-  
 };
-
