@@ -16,7 +16,7 @@ export const handleProcessState = (elements, watchedState, processState) => {
       elements.feedbackEl.classList.replace('text-info', 'text-success');
       elements.feedbackEl.textContent = i18n.t('feedbackMsg.processState.success');
 
-      showFeedsAndPosts(elements.RSSfeedsEl, watchedState.loadedRSSfeeds.feeds, watchedState.loadedRSSfeeds.posts);
+      showFeedsAndPosts(elements.RSSfeedsEl, elements.RSSpostsEl, watchedState.loadedRSSfeeds.feeds, watchedState.loadedRSSfeeds.posts);
       break;
     
     case 'loading':
@@ -39,7 +39,8 @@ export const handleProcessState = (elements, watchedState, processState) => {
   }
 };
 
-const createRSSelementsContainer = (RSSfeedsEl, header) => {
+const createRSSelementsContainer = (RSSEl, header) => {
+
   const container = document.createElement('div');
   container.classList.add('card', 'border-0');
   const containerHeader = document.createElement('div');
@@ -53,15 +54,15 @@ const createRSSelementsContainer = (RSSfeedsEl, header) => {
   containerHeader.appendChild(containerHeaderElement);
   container.appendChild(containerHeader);
   container.append(ulElement);
-  RSSfeedsEl.appendChild(container);
+  RSSEl.appendChild(container);
 
   return ulElement;
 }
 
-const showFeedsAndPosts = (RSSfeedsEl, loadedRSSfeeds, loadedRSSposts) => {
+const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSposts) => {
   RSSfeedsEl.innerHTML = '';
   const ulFeedsContainer = createRSSelementsContainer(RSSfeedsEl, 'Фиды');
-  const ulPostsContainer = createRSSelementsContainer(RSSfeedsEl, 'Посты');
+  const ulPostsContainer = createRSSelementsContainer(RSSpostsEl, 'Посты');
 
   const feeds = loadedRSSfeeds.map(({ title, description }) => {
     const liEl = document.createElement('li');
