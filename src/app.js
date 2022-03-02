@@ -1,4 +1,3 @@
-import * as yup from 'yup';
 import onChange from 'on-change';
 import axios from 'axios';
 import uniqueId from 'lodash/uniqueId.js';
@@ -109,7 +108,7 @@ export default () => {
             } else {
               console.log('PARSING error');
               watchedState.form.process.error = 'feedbackMsg.processState.notValid';
-            };
+            }
             
             watchedState.form.process.state = 'failed';
           })
