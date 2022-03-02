@@ -1,6 +1,6 @@
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import init from './init.js';
+import i18n from './i18n.js';
 
-init();
+i18n();

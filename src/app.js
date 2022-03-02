@@ -1,33 +1,10 @@
 import * as yup from 'yup';
 import onChange from 'on-change';
-import { renderErrors, showRSSfeed } from './view.js';
+import axios from 'axios';
+import uniqueId from 'lodash/uniqueId.js';
+import validate from './validation.js'
+import { handleProcessState, renderErrors } from './view.js';
 
-const schema = yup.string().required().url('feedbackMsg.errors.notValid');
-const validate = (field) => {
-  const errors = schema
-    .validate(field)
-    .then(function() {
-      return [];
-    })
-    .catch(function(err) {
-      return err.errors;
-    });
-  return errors;
-}
-
-
-const render = (elements) => (path, value) => {
-  switch(path) {
-    case 'form.validation.error':
-      renderErrors(elements, value);
-      break;
-    case 'form.RSSurl.processed':
-      showRSSfeed(elements, value);
-      break;
-    default:
-      break;
-  }
-};
 
 export default () => {
 
@@ -36,40 +13,107 @@ export default () => {
     RSSinput: document.getElementById('url-input'),
     submitBtn: document.querySelector('button[type = "submit"]'),
     feedbackEl: document.querySelector('p.feedback'),
-    RSSfeedEl: document.querySelector('div.posts'),
+    RSSfeedsEl: document.querySelector('div.feeds'),
+    RSSpostsEl: document.querySelector('div.posts'),
   };
 
-  const state = onChange({
+  const state = {
     form: {
       validation: {
         error: '',
       },
-      RSSurl: {
-        entered: '',
-        processed: '',
-      }
+      process: {
+        state: '',
+        error: '',
+      },
+      enteredURL: '',
+    },
+    loadedRSSfeeds: {
+      feeds: [], // { id: uniqueId(), URL: '', title: '', description: '' }
+      posts: [], // { feedId: '', title: '', URL: '' }
+    },
+  };
+
+  const watchedState = onChange(state, (path, value) => {
+    switch(path) {
+      case 'form.validation.error':
+        renderErrors(elements, value);
+        break;
+
+      case 'form.process.state':
+        handleProcessState(elements, state, value);
+        break;
+
+      /*case 'form.process.error':
+        handleProcessError(elements, value);
+        break;*/
+
+      default:
+        break;
     }
-  }, render(elements));
+  });
+  
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const data  = new FormData(e.target);
-    state.form.RSSurl.entered = data.get('url');
+    watchedState.form.enteredURL = data.get('url');
 
-    const errors = validate(state.form.RSSurl.entered);
+    const errors = validate(watchedState.form.enteredURL);
     errors
-      .then(function(errors) {
-        state.form.validation.error = errors.join(', ');
+      .then(function (errors) {
+        watchedState.form.validation.error = errors.join(', ');
       })
+
       .then(function() {
-        if(state.form.RSSurl.entered === state.form.RSSurl.processed) {
-          state.form.validation.error = 'feedbackMsg.errors.duplication';
+        if(watchedState.loadedRSSfeeds.feeds.some((e) => e.URL === watchedState.form.enteredURL)) {
+          watchedState.form.validation.error = 'feedbackMsg.validation.duplication';
         }
       })
+
       .then(function() {
-        if(state.form.validation.error.length === 0) {
-          state.form.RSSurl.processed = state.form.RSSurl.entered;
+        if(watchedState.form.validation.error.length === 0) {
+          watchedState.form.process.state = 'loading';
+          watchedState.form.process.error = '';
+
+          axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(watchedState.form.enteredURL)}`)
+          .then(function(response) {
+            const parser = new DOMParser();
+            const parsedResponse = parser.parseFromString(response.data.contents, 'text/xml');
+
+            const feed = { 
+              id: uniqueId(),
+              URL: watchedState.form.enteredURL,
+              title: parsedResponse.querySelector('title').textContent, 
+              description: parsedResponse.querySelector('description').textContent,
+            };
+            watchedState.loadedRSSfeeds.feeds.push(feed);
+
+            const parsedPosts = parsedResponse.querySelectorAll('item');
+            parsedPosts.forEach((parsedPost) => {
+              const post = {
+                feedId: feed.id,
+                title: parsedPost.querySelector('title').textContent,
+                URL: parsedPost.querySelector('link').textContent,
+              };
+              watchedState.loadedRSSfeeds.posts.push(post);
+            })
+
+            watchedState.form.process.state = 'loaded';
+          })
+          
+          .catch(function (error) {
+            if (error.response || error.request) {
+              console.log('CONNECTION error');
+              watchedState.form.process.error = 'feedbackMsg.processState.networkError';
+            } else {
+              console.log('PARSING error');
+              watchedState.form.process.error = 'feedbackMsg.processState.notValid';
+            };
+            
+            watchedState.form.process.state = 'failed';
+          })
         }
-    })
+      })
   });
 };
