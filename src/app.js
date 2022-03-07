@@ -29,7 +29,7 @@ export default () => {
     },
     loadedRSSfeeds: {
       feeds: [], // { id: uniqueId(), URL: '', title: '', description: '' }
-      posts: [], // { feedId: '', title: '', URL: '' }
+      posts: [], // { feedId: '', , URL: '', title: '', description: '' }
     },
   };
 
@@ -92,8 +92,9 @@ export default () => {
             parsedPosts.forEach((parsedPost) => {
               const post = {
                 feedId: feed.id,
-                title: parsedPost.querySelector('title').textContent,
                 URL: parsedPost.querySelector('link').textContent,
+                title: parsedPost.querySelector('title').textContent,
+                description: parsedPost.querySelector('description').textContent,
               };
               watchedState.loadedRSSfeeds.posts.push(post);
             })

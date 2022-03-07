@@ -61,19 +61,20 @@ const createRSSelementsContainer = (RSSEl, header) => {
 
 const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSposts) => {
   RSSfeedsEl.innerHTML = '';
+  RSSpostsEl.innerHTML = '';
   const ulFeedsContainer = createRSSelementsContainer(RSSfeedsEl, 'Фиды');
   const ulPostsContainer = createRSSelementsContainer(RSSpostsEl, 'Посты');
 
   const feeds = loadedRSSfeeds.map(({ title, description }) => {
     const liEl = document.createElement('li');
-    liEl.classList.add('list-group-item', 'border-0', 'rounded-0');
+    liEl.classList.add('list-group-item', 'border-0', 'border-end-0');
 
     const titleEl = document.createElement('h3');
-    titleEl.classList.add('h6', 'm0');
+    titleEl.classList.add('h6', 'm-0');
     titleEl.textContent = `${title}`;
 
     const descriptionEl = document.createElement('p');
-    descriptionEl.classList.add('m0', 'small', 'text-black-50');
+    descriptionEl.classList.add('m-0', 'small', 'text-black-50');
     descriptionEl.textContent = `${description}`;
     
     liEl.append(titleEl);
@@ -84,7 +85,7 @@ const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSpost
 
   ulFeedsContainer.prepend(...feeds);
 
-  const posts = loadedRSSposts.map(({ title, URL }) => {
+  const posts = loadedRSSposts.map(({ URL, title, description }) => {
     const liEl = document.createElement('li');
     liEl.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
     
@@ -94,6 +95,10 @@ const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSpost
     aEl.setAttribute('target', '_blank');
     aEl.setAttribute('rel', 'noopener noreferrer');
     aEl.textContent = `${title}`;
+    aEl.addEventListener('click', () => {
+      aEl.classList.remove('fw-bold');
+      aEl.classList.add('fw-normal', 'link-secondary');
+    });
 
     const btn = document.createElement('button');
     btn.classList.add('btn', 'btn-outline-primary', 'btn-sm');
@@ -101,7 +106,15 @@ const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSpost
     btn.setAttribute('data-bs-toggle', 'modal');
     btn.setAttribute('data-bs-target', '#modal');
     btn.textContent = 'Просмотр';
-    
+    btn.addEventListener('click', () => {
+      const modalTitle = document.querySelector('h5.modal-title');
+      const modalBody = document.querySelector('div.modal-body');
+      const fullAtricleBtn = document.querySelector('a.full-article');
+      modalTitle.textContent = `${title}`;
+      modalBody.textContent = `${description}`;
+      fullAtricleBtn.href = `${URL}`;
+    });
+
     liEl.append(aEl);
     liEl.append(btn);
 
