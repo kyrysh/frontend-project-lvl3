@@ -16,9 +16,9 @@ export const handleProcessState = (elements, watchedState, processState) => {
       elements.feedbackEl.classList.replace('text-info', 'text-success');
       elements.feedbackEl.textContent = i18n.t('feedbackMsg.processState.success');
 
-      showFeedsAndPosts(elements.RSSfeedsEl, elements.RSSpostsEl, watchedState.loadedRSSfeeds.feeds, watchedState.loadedRSSfeeds.posts);
+      showFeedsAndPosts(elements.RSSfeedsEl, elements.RSSpostsEl, watchedState.loadedRSSfeeds.feeds, watchedState.loadedRSSfeeds.posts, watchedState.UIstate.readedPostsURLs);
       break;
-    
+     
     case 'loading':
       elements.submitBtn.disabled = true;
       elements.RSSinput.classList.remove('is-invalid');
@@ -59,7 +59,7 @@ const createRSSelementsContainer = (RSSEl, header) => {
   return ulElement;
 }
 
-const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSposts) => {
+const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSposts, readedRSSposts) => {
   RSSfeedsEl.innerHTML = '';
   RSSpostsEl.innerHTML = '';
   const ulFeedsContainer = createRSSelementsContainer(RSSfeedsEl, 'Фиды');
@@ -96,6 +96,9 @@ const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSpost
     aEl.setAttribute('rel', 'noopener noreferrer');
     aEl.textContent = `${title}`;
     aEl.addEventListener('click', () => {
+      if (!readedRSSposts.includes(aEl.href)) {
+        readedRSSposts.push(aEl.href);
+      }
       aEl.classList.remove('fw-bold');
       aEl.classList.add('fw-normal', 'link-secondary');
     });
@@ -107,9 +110,16 @@ const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSpost
     btn.setAttribute('data-bs-target', '#modal');
     btn.textContent = 'Просмотр';
     btn.addEventListener('click', () => {
+      if (!readedRSSposts.includes(URL)) {
+        readedRSSposts.push(URL);
+      }
+      aEl.classList.remove('fw-bold');
+      aEl.classList.add('fw-normal', 'link-secondary');
+    
       const modalTitle = document.querySelector('h5.modal-title');
       const modalBody = document.querySelector('div.modal-body');
       const fullAtricleBtn = document.querySelector('a.full-article');
+    
       modalTitle.textContent = `${title}`;
       modalBody.textContent = `${description}`;
       fullAtricleBtn.href = `${URL}`;

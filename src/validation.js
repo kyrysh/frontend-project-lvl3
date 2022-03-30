@@ -1,7 +1,5 @@
 import * as yup from 'yup';
 
-
-
 const schema = yup.string().required().url('feedbackMsg.validation.notValid');
 
 export default (field) => {

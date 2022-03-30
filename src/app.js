@@ -1,7 +1,7 @@
 import onChange from 'on-change';
 import axios from 'axios';
-import uniqueId from 'lodash/uniqueId.js';
-import validate from './validation.js'
+import { uniqueId, map, find } from 'lodash';
+import validate from './validation.js';
 import { handleProcessState, renderErrors } from './view.js';
 
 
@@ -29,8 +29,11 @@ export default () => {
     },
     loadedRSSfeeds: {
       feeds: [], // { id: uniqueId(), URL: '', title: '', description: '' }
-      posts: [], // { feedId: '', , URL: '', title: '', description: '' }
+      posts: [], // { feedId: '', URL: '', title: '', description: '' }
     },
+    UIstate: {
+      readedPostsURLs: [],
+    }
   };
 
   const watchedState = onChange(state, (path, value) => {
@@ -42,11 +45,7 @@ export default () => {
       case 'form.process.state':
         handleProcessState(elements, state, value);
         break;
-
-      /*case 'form.process.error':
-        handleProcessError(elements, value);
-        break;*/
-
+        
       default:
         break;
     }
@@ -75,7 +74,7 @@ export default () => {
           watchedState.form.process.state = 'loading';
           watchedState.form.process.error = '';
 
-          axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(watchedState.form.enteredURL)}`)
+          axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(watchedState.form.enteredURL)}`)
           .then(function(response) {
             const parser = new DOMParser();
             const parsedResponse = parser.parseFromString(response.data.contents, 'text/xml');
@@ -100,8 +99,44 @@ export default () => {
             })
 
             watchedState.form.process.state = 'loaded';
+            //console.log(state.UIstate.readedPostsURLs);
+
+            setTimeout (function updatePosts() {
+              const feedsURLs = map(watchedState.loadedRSSfeeds.feeds, 'URL');
+              feedsURLs.forEach((feedURL) => {
+                axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(feedURL)}`)
+  
+                  .then(function(response) {
+                  const parser = new DOMParser();
+                  const parsedResponse = parser.parseFromString(response.data.contents, 'text/xml');
+
+                  const newParsedPosts = parsedResponse.querySelectorAll('item');
+                  newParsedPosts.forEach((parsedPost) => {
+                    const newParsedPostLink = parsedPost.querySelector('link').textContent;
+
+                    if (find(watchedState.loadedRSSfeeds.posts, ['URL', newParsedPostLink])) {
+                      return;
+                    }
+
+                    const newPost = {
+                      feedId: feed.id,
+                      URL: newParsedPostLink,
+                      title: parsedPost.querySelector('title').textContent,
+                      description: parsedPost.querySelector('description').textContent,
+                    };
+                    
+                    watchedState.loadedRSSfeeds.posts.push(newPost);
+                    handleProcessState(elements, watchedState, 'loaded');
+                    console.log(watchedState.loadedRSSfeeds.posts);
+                  })
+                })
+              })
+              
+              setTimeout(updatePosts, 5000);
+            }, 5000);
+
           })
-          
+        
           .catch(function (error) {
             if (error.response || error.request) {
               console.log('CONNECTION error');
