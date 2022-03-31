@@ -98,10 +98,7 @@ export default () => {
               watchedState.loadedRSSfeeds.posts.push(post);
             })
 
-            //console.log(watchedState.loadedRSSfeeds.posts);
-
             watchedState.form.process.state = 'loaded';
-            //console.log(state.UIstate.readedPostsURLs);
 
             setTimeout (function updatePosts() {
               const feedsURLs = map(watchedState.loadedRSSfeeds.feeds, 'URL');
@@ -129,7 +126,6 @@ export default () => {
                     
                     watchedState.loadedRSSfeeds.posts.push(newPost);
                     handleProcessState(elements, watchedState, 'loaded');
-                    //console.log(watchedState.loadedRSSfeeds.posts);
                   })
                 })
               })
