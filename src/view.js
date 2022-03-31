@@ -65,7 +65,7 @@ const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSpost
   const ulFeedsContainer = createRSSelementsContainer(RSSfeedsEl, 'Фиды');
   const ulPostsContainer = createRSSelementsContainer(RSSpostsEl, 'Посты');
 
-  const feeds = loadedRSSfeeds.map(({ title, description }) => {
+  loadedRSSfeeds.map(({ title, description }) => {
     const liEl = document.createElement('li');
     liEl.classList.add('list-group-item', 'border-0', 'border-end-0');
 
@@ -80,10 +80,12 @@ const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSpost
     liEl.append(titleEl);
     liEl.append(descriptionEl);
 
-    return liEl;
+    //return liEl;
+
+    ulFeedsContainer.prepend(liEl);
   });
 
-  ulFeedsContainer.prepend(...feeds);
+  ///ulFeedsContainer.prepend(...feeds);
 
   const posts = loadedRSSposts.map(({ URL, title, description }) => {
     const liEl = document.createElement('li');
@@ -129,7 +131,9 @@ const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSpost
     liEl.append(btn);
 
     return liEl;
+    //ulPostsContainer.append(liEl);
   });
+  //console.log(posts);
 
   ulPostsContainer.prepend(...posts);
 };

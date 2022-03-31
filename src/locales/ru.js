@@ -8,7 +8,7 @@ export default {
       processState: {
         loading: 'Подождите. Скачивание потока в процессе.',
         notValid: 'Ресурс не содержит валидный RSS',
-        networkError: 'Сеть недоступна. Попробуйте еще раз.',
+        networkError: 'Ошибка сети',
         success: 'RSS успешно загружен',
       }
     },

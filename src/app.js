@@ -98,6 +98,8 @@ export default () => {
               watchedState.loadedRSSfeeds.posts.push(post);
             })
 
+            //console.log(watchedState.loadedRSSfeeds.posts);
+
             watchedState.form.process.state = 'loaded';
             //console.log(state.UIstate.readedPostsURLs);
 
@@ -127,7 +129,7 @@ export default () => {
                     
                     watchedState.loadedRSSfeeds.posts.push(newPost);
                     handleProcessState(elements, watchedState, 'loaded');
-                    console.log(watchedState.loadedRSSfeeds.posts);
+                    //console.log(watchedState.loadedRSSfeeds.posts);
                   })
                 })
               })
