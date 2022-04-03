@@ -3,13 +3,12 @@ import ru from './locales/ru.js';
 import app from './app.js';
 
 export default () => {
-  i18n.init({
+  const i18nInstance = i18n.createInstance();
+  i18nInstance.init({
     lng: 'ru',
     debug: true,
     resources: {
       ru,
-    }
-  }).then (app());
+    },
+  }).then(app(i18nInstance));
 };
-
-
