@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "My webpack project",
   "main": "src/index.js",
-
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode=production --node-env=production",
@@ -43,6 +42,8 @@
     "i18next": "^21.6.6",
     "lodash": "^4.17.21",
     "on-change": "^4.0.0",
+    "postcss-loader": "^6.2.1",
+    "sass-loader": "^12.6.0",
     "yup": "^0.32.11"
   }
 }
