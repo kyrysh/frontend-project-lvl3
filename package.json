@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "My webpack project",
   "main": "./src/i18n.js",
+  "type": "module",
 
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -1,13 +1,18 @@
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
 
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = {
-    //mode: 'development',
-    mode: process.env.NODE_ENV || 'development',
+//const path = require('path');
+//import path from 'path';
+
+//const HtmlWebpackPlugin = require('html-webpack-plugin');
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+
+export default {
+    mode: 'development',
+
     entry: './src/index.js',
     devtool: 'inline-source-map',
+
     devServer: {
         open: true,
         host: 'localhost',
@@ -19,9 +24,9 @@ module.exports = {
         }),
     ],
     output: {
-        filename: '[name].bundle.js',
-        path: path.resolve(__dirname, 'dist'),
-        clean: true,
+        filename: 'bundle.js',
+        //path: path.resolve(__dirname, 'dist'),
+        //clean: true,
     },
     module: {
         rules: [
