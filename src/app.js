@@ -1,11 +1,12 @@
 import onChange from 'on-change';
 import axios from 'axios';
-import { uniqueId, map } from 'lodash';
-import find from 'lodash';
+import _ from 'lodash';
+//import { uniqueId, map } from 'lodash';
+//import find from 'lodash';
 import validate from './validation.js';
 import { handleProcessState, renderErrors } from './view.js';
 
-const { find } = find;
+
 
 
 export default () => {
@@ -83,7 +84,7 @@ export default () => {
             const parsedResponse = parser.parseFromString(response.data.contents, 'text/xml');
 
             const feed = { 
-              id: uniqueId(),
+              id: _.uniqueId(),
               URL: watchedState.form.enteredURL,
               title: parsedResponse.querySelector('title').textContent, 
               description: parsedResponse.querySelector('description').textContent,
@@ -104,7 +105,7 @@ export default () => {
             watchedState.form.process.state = 'loaded';
 
             setTimeout (function updatePosts() {
-              const feedsURLs = map(watchedState.loadedRSSfeeds.feeds, 'URL');
+              const feedsURLs = _.map(watchedState.loadedRSSfeeds.feeds, 'URL');
               feedsURLs.forEach((feedURL) => {
                 axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(feedURL)}`)
   
@@ -116,7 +117,7 @@ export default () => {
                   newParsedPosts.forEach((parsedPost) => {
                     const newParsedPostLink = parsedPost.querySelector('link').textContent;
 
-                    if (find(watchedState.loadedRSSfeeds.posts, ['URL', newParsedPostLink])) {
+                    if (_.find(watchedState.loadedRSSfeeds.posts, ['URL', newParsedPostLink])) {
                       return;
                     }
 
