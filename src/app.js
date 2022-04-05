@@ -1,8 +1,11 @@
 import onChange from 'on-change';
 import axios from 'axios';
-import { uniqueId, map, find, matchesProperty } from 'lodash';
+import { uniqueId, map } from 'lodash';
+import find from 'lodash';
 import validate from './validation.js';
 import { handleProcessState, renderErrors } from './view.js';
+
+const { find } = find;
 
 
 export default () => {
@@ -113,7 +116,7 @@ export default () => {
                   newParsedPosts.forEach((parsedPost) => {
                     const newParsedPostLink = parsedPost.querySelector('link').textContent;
 
-                    if (find(watchedState.loadedRSSfeeds.posts, matchesProperty('URL', newParsedPostLink))) {
+                    if (find(watchedState.loadedRSSfeeds.posts, ['URL', newParsedPostLink])) {
                       return;
                     }
 
