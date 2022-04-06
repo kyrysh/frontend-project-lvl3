@@ -43,11 +43,11 @@ export default (i18n) => {
   const watchedState = onChange(state, (path, value) => {
     switch(path) {
       case 'form.validation.error':
-        renderErrors(elements, value);
+        renderErrors(elements, value, i18n);
         break;
 
       case 'form.process.state':
-        handleProcessState(elements, state, value);
+        handleProcessState(elements, state, value, i18n);
         break;
         
       default:
@@ -61,17 +61,20 @@ export default (i18n) => {
     const data  = new FormData(e.target);
     watchedState.form.enteredURL = data.get('url');
 
-    const errors = validate(watchedState.form.enteredURL);
+    const loadedFeedsUrls = watchedState.loadedRSSfeeds.feeds.map((feed) => feed.URL);
+
+    const errors = validate(watchedState.form.enteredURL, loadedFeedsUrls);
     errors
       .then(function (errors) {
         watchedState.form.validation.error = errors.join(', ');
+        //console.log(watchedState.form.validation.error);
       })
 
-      .then(function() {
+      /*.then(function() {
         if(watchedState.loadedRSSfeeds.feeds.some((e) => e.URL === watchedState.form.enteredURL)) {
           watchedState.form.validation.error = 'feedbackMsg.validation.duplication';
         }
-      })
+      })*/
 
       .then(function() {
         if(watchedState.form.validation.error.length === 0) {

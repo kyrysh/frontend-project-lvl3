@@ -1,12 +1,12 @@
-import i18n from 'i18next';
+//import i18n from 'i18next';
 
-export const renderErrors = (elements, error) => {
+export const renderErrors = (elements, error, i18n) => {
   elements.feedbackEl.classList.replace('text-success', 'text-danger');
   elements.feedbackEl.textContent = i18n.t(`${error}`);
   elements.RSSinput.classList.add('is-invalid');
 };
 
-export const handleProcessState = (elements, watchedState, processState) => {
+export const handleProcessState = (elements, watchedState, processState, i18n) => {
   switch(processState) {
     case 'loaded':
       elements.form.reset();

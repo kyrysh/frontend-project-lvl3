@@ -1,8 +1,18 @@
 import * as yup from 'yup';
 
-const schema = yup.string().required('feedbackMsg.validation.empty').url('feedbackMsg.validation.notValid');
+export default (field, urls) => {
+  yup.setLocale({
+    mixed: {
+      required: () => 'feedbackMsg.validation.empty',
+      notOneOf: () => 'feedbackMsg.validation.duplication',
+    },
+    string: {
+      url: () => 'feedbackMsg.validation.notValid',
+    },
+  });
 
-export default (field) => {
+  const schema = yup.string().required().url().notOneOf(urls);
+
   const errors = schema
     .validate(field)
     .then(function() {
