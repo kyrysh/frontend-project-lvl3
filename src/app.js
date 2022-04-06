@@ -9,7 +9,7 @@ import { handleProcessState, renderErrors } from './view.js';
 
 
 
-export default () => {
+export default (i18n) => {
 
   const elements = {
     form: document.querySelector('form'),
