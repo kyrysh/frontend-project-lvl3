@@ -9,12 +9,13 @@ export const renderErrors = (elements, error, i18n) => {
 export const handleProcessState = (elements, watchedState, processState, i18n) => {
   switch(processState) {
     case 'loaded':
-      elements.form.reset();
-      elements.RSSinput = '';
+      //elements.form.reset();
+      elements.RSSinput.value = '';
       elements.RSSinput.focus;
 
       elements.submitBtn.disabled = false;
       elements.feedbackEl.classList.replace('text-info', 'text-success');
+      //elements.feedbackEl.className = 'text-success';
       elements.feedbackEl.textContent = i18n.t('feedbackMsg.processState.success');
 
       showFeedsAndPosts(elements.RSSfeedsEl, elements.RSSpostsEl, watchedState.loadedRSSfeeds.feeds, watchedState.loadedRSSfeeds.posts, watchedState.UIstate.readedPostsURLs);
@@ -25,14 +26,17 @@ export const handleProcessState = (elements, watchedState, processState, i18n) =
       elements.RSSinput.classList.remove('is-invalid');
       elements.feedbackEl.classList.remove('text-danger', 'text-success');
       elements.feedbackEl.classList.add('text-info');
+      //elements.feedbackEl.className = 'text-info';
       elements.feedbackEl.textContent = i18n.t('feedbackMsg.processState.loading');
       break;
 
     case 'failed':
       elements.submitBtn.disabled = false;
       elements.feedbackEl.classList.replace('text-info', 'text-danger');
+      //elements.feedbackEl.className = 'text-danger';
       elements.feedbackEl.textContent = i18n.t(watchedState.form.process.error);
       elements.RSSinput.classList.add('is-invalid');
+      //elements.RSSinput.className = 'is-invalid';
       break;
 
     default:
