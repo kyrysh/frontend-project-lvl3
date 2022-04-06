@@ -13,6 +13,7 @@ export const handleProcessState = (elements, watchedState, processState, i18n) =
       elements.RSSinput.value = '';
       elements.RSSinput.focus;
 
+      elements.RSSinput = false;
       elements.submitBtn.disabled = false;
       elements.feedbackEl.classList.replace('text-info', 'text-success');
       //elements.feedbackEl.className = 'text-success';
@@ -22,6 +23,7 @@ export const handleProcessState = (elements, watchedState, processState, i18n) =
       break;
      
     case 'loading':
+      elements.RSSinput = true;
       elements.submitBtn.disabled = true;
       elements.RSSinput.classList.remove('is-invalid');
       elements.feedbackEl.classList.remove('text-danger', 'text-success');
@@ -31,6 +33,7 @@ export const handleProcessState = (elements, watchedState, processState, i18n) =
       break;
 
     case 'failed':
+      elements.RSSinput = false;
       elements.submitBtn.disabled = false;
       elements.feedbackEl.classList.replace('text-info', 'text-danger');
       //elements.feedbackEl.className = 'text-danger';
