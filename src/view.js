@@ -10,6 +10,7 @@ export const handleProcessState = (elements, watchedState, processState, i18n) =
   switch(processState) {
     case 'loaded':
       elements.form.reset();
+      elements.RSSinput = '';
       elements.RSSinput.focus;
 
       elements.submitBtn.disabled = false;
