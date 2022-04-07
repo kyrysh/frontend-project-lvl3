@@ -15,11 +15,7 @@ export default (field, urls) => {
 
   const errors = schema
     .validate(field)
-    .then(function() {
-      return [];
-    })
-    .catch(function(err) {
-      return err.errors;
-    });
+    .then(() => [])
+    .catch((err) => err.errors);
   return errors;
 };

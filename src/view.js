@@ -1,54 +1,4 @@
-//import i18n from 'i18next';
-
-export const renderErrors = (elements, error, i18n) => {
-  elements.feedbackEl.classList.replace('text-success', 'text-danger');
-  elements.feedbackEl.textContent = i18n.t(`${error}`);
-  elements.RSSinput.classList.add('is-invalid');
-};
-
-export const handleProcessState = (elements, watchedState, processState, i18n) => {
-  switch(processState) {
-    case 'loaded':
-      //elements.form.reset();
-      elements.RSSinput.value = '';
-      elements.RSSinput.focus;
-
-      elements.RSSinput.readOnly = false;
-      elements.submitBtn.disabled = false;
-      elements.feedbackEl.classList.replace('text-info', 'text-success');
-      //elements.feedbackEl.className = 'text-success';
-      elements.feedbackEl.textContent = i18n.t('feedbackMsg.processState.success');
-
-      showFeedsAndPosts(elements.RSSfeedsEl, elements.RSSpostsEl, watchedState.loadedRSSfeeds.feeds, watchedState.loadedRSSfeeds.posts, watchedState.UIstate.readedPostsURLs);
-      break;
-     
-    case 'loading':
-      elements.RSSinput.readOnly = true;
-      elements.submitBtn.disabled = true;
-      elements.RSSinput.classList.remove('is-invalid');
-      elements.feedbackEl.classList.remove('text-danger', 'text-success');
-      elements.feedbackEl.classList.add('text-info');
-      //elements.feedbackEl.className = 'text-info';
-      elements.feedbackEl.textContent = i18n.t('feedbackMsg.processState.loading');
-      break;
-
-    case 'failed':
-      elements.RSSinput.readOnly = false;
-      elements.submitBtn.disabled = false;
-      elements.feedbackEl.classList.replace('text-info', 'text-danger');
-      //elements.feedbackEl.className = 'text-danger';
-      elements.feedbackEl.textContent = i18n.t(watchedState.form.process.error);
-      elements.RSSinput.classList.add('is-invalid');
-      //elements.RSSinput.className = 'is-invalid';
-      break;
-
-    default:
-      throw new Error (`Unknown process state: ${processState}`)
-  }
-};
-
 const createRSSelementsContainer = (RSSEl, header) => {
-
   const container = document.createElement('div');
   container.classList.add('card', 'border-0');
   const containerHeader = document.createElement('div');
@@ -65,15 +15,15 @@ const createRSSelementsContainer = (RSSEl, header) => {
   RSSEl.appendChild(container);
 
   return ulElement;
-}
+};
 
-const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSposts, readedRSSposts) => {
-  RSSfeedsEl.innerHTML = '';
-  RSSpostsEl.innerHTML = '';
-  const ulFeedsContainer = createRSSelementsContainer(RSSfeedsEl, 'Фиды');
-  const ulPostsContainer = createRSSelementsContainer(RSSpostsEl, 'Посты');
+const showFeedsAndPosts = (feedsEl, postsEl, loadedFeeds, loadedPosts, readedPosts) => {
+  feedsEl.innerHTML = '';
+  postsEl.innerHTML = '';
+  const ulFeedsContainer = createRSSelementsContainer(feedsEl, 'Фиды');
+  const ulPostsContainer = createRSSelementsContainer(postsEl, 'Посты');
 
-  loadedRSSfeeds.map(({ title, description }) => {
+  const feeds = loadedFeeds.map(({ title, description }) => {
     const liEl = document.createElement('li');
     liEl.classList.add('list-group-item', 'border-0', 'border-end-0');
 
@@ -84,17 +34,19 @@ const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSpost
     const descriptionEl = document.createElement('p');
     descriptionEl.classList.add('m-0', 'small', 'text-black-50');
     descriptionEl.textContent = `${description}`;
-    
+
     liEl.append(titleEl);
     liEl.append(descriptionEl);
 
-    ulFeedsContainer.prepend(liEl);
+    return liEl;
   });
 
-  const posts = loadedRSSposts.map(({ URL, title, description }) => {
+  ulFeedsContainer.prepend(...feeds);
+
+  const posts = loadedPosts.map(({ URL, title, description }) => {
     const liEl = document.createElement('li');
     liEl.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
-    
+
     const aEl = document.createElement('a');
     aEl.classList.add('fw-bold');
     aEl.href = `${URL}`;
@@ -102,8 +54,8 @@ const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSpost
     aEl.setAttribute('rel', 'noopener noreferrer');
     aEl.textContent = `${title}`;
     aEl.addEventListener('click', () => {
-      if (!readedRSSposts.includes(aEl.href)) {
-        readedRSSposts.push(aEl.href);
+      if (!readedPosts.includes(aEl.href)) {
+        readedPosts.push(aEl.href);
       }
       aEl.classList.remove('fw-bold');
       aEl.classList.add('fw-normal', 'link-secondary');
@@ -116,16 +68,16 @@ const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSpost
     btn.setAttribute('data-bs-target', '#modal');
     btn.textContent = 'Просмотр';
     btn.addEventListener('click', () => {
-      if (!readedRSSposts.includes(URL)) {
-        readedRSSposts.push(URL);
+      if (!readedPosts.includes(URL)) {
+        readedPosts.push(URL);
       }
       aEl.classList.remove('fw-bold');
       aEl.classList.add('fw-normal', 'link-secondary');
-    
+
       const modalTitle = document.querySelector('h5.modal-title');
       const modalBody = document.querySelector('div.modal-body');
       const fullAtricleBtn = document.querySelector('a.full-article');
-    
+
       modalTitle.textContent = `${title}`;
       modalBody.textContent = `${description}`;
       fullAtricleBtn.href = `${URL}`;
@@ -138,4 +90,54 @@ const showFeedsAndPosts = (RSSfeedsEl, RSSpostsEl, loadedRSSfeeds, loadedRSSpost
   });
 
   ulPostsContainer.prepend(...posts);
+};
+
+export const renderErrors = (elements, error, i18n) => {
+  elements.feedbackEl.classList.replace('text-success', 'text-danger');
+  elements.feedbackEl.textContent = i18n.t(`${error}`);
+  elements.RSSinput.classList.add('is-invalid');
+};
+
+export const handleProcessState = (elements, watchedState, processState, i18n) => {
+  const {
+    RSSinput, submitBtn, feedbackEl, RSSfeedsEl, RSSpostsEl,
+  } = elements;
+
+  const loadedFeeds = watchedState.loadedRSSfeeds.feeds;
+  const loadedPosts = watchedState.loadedRSSfeeds.posts;
+  const readedPosts = watchedState.UIstate.readedPostsURLs;
+
+  switch (processState) {
+    case 'loaded':
+      RSSinput.value = ''; // elements.form.reset();
+      RSSinput.focus();
+
+      RSSinput.readOnly = false;
+      submitBtn.disabled = false;
+      feedbackEl.classList.replace('text-info', 'text-success');
+      feedbackEl.textContent = i18n.t('feedbackMsg.processState.success');
+
+      showFeedsAndPosts(RSSfeedsEl, RSSpostsEl, loadedFeeds, loadedPosts, readedPosts);
+      break;
+
+    case 'loading':
+      RSSinput.readOnly = true;
+      submitBtn.disabled = true;
+      RSSinput.classList.remove('is-invalid');
+      feedbackEl.classList.remove('text-danger', 'text-success');
+      feedbackEl.classList.add('text-info');
+      feedbackEl.textContent = i18n.t('feedbackMsg.processState.loading');
+      break;
+
+    case 'failed':
+      RSSinput.readOnly = false;
+      submitBtn.disabled = false;
+      feedbackEl.classList.replace('text-info', 'text-danger');
+      feedbackEl.textContent = i18n.t(watchedState.form.process.error);
+      RSSinput.classList.add('is-invalid');
+      break;
+
+    default:
+      throw new Error(`Unknown process state: ${processState}`);
+  }
 };

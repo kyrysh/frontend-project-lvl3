@@ -9,8 +9,6 @@ export default () => {
     debug: true,
     resources: {
       ru,
-    }
-  }).then (app(i18nInstance));
+    },
+  }).then(app(i18nInstance));
 };
-
-
