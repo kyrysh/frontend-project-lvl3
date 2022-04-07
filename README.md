@@ -6,7 +6,7 @@
 ## Description
 Simple RSS reader with automatic feeds updating and posts preview.
 
-**[Deploy Preview] (https://frontend-project-lvl3-seven-gray.vercel.app/)**
+**[Deploy Preview](https://frontend-project-lvl3-seven-gray.vercel.app/)**
 
 NOTE: This project was created during training at [Hexlet](https://ru.hexlet.io) (programming online school).
 
