@@ -1,11 +1,10 @@
 {
   "name": "@hexlet/code",
   "version": "1.0.0",
-  "description": "My webpack project",
-  "main": "./src/i18n.js",
+  "description": "RSS aggregator",
+  "main": "./src/init.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode=production --node-env=production",
     "build:dev": "webpack --mode=development",
     "build:prod": "webpack --mode=production --node-env=production",
