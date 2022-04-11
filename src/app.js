@@ -62,7 +62,7 @@ export default (i18n) => {
                 id: _.uniqueId(),
                 URL: enteredURL,
                 title: parsedFeed.title,
-                description: parsedFeed.title,
+                description: parsedFeed.description,
               };
               watchedState.loadedRSSfeeds.feeds.push(feed);
 
