@@ -1,9 +1,8 @@
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 
-export default {
-  mode: 'development',
+const config = {
+  mode: process.env.NODE_ENV || 'development',
   entry: './src/index.js',
-  devtool: 'inline-source-map',
   devServer: {
     open: true,
     host: 'localhost',
@@ -25,4 +24,9 @@ export default {
       },
     ],
   },
+};
+
+export default (env, options) => {
+  config.devtool = options.mode === 'production' ? false : 'inline-source-map';
+  return config;
 };

@@ -1,3 +1,5 @@
+import onChange from 'on-change';
+
 const createRSSelementsContainer = (RSSEl, header) => {
   const container = document.createElement('div');
   container.classList.add('card', 'border-0');
@@ -92,13 +94,15 @@ const showFeedsAndPosts = (feedsEl, postsEl, loadedFeeds, loadedPosts, readedPos
   ulPostsContainer.prepend(...posts);
 };
 
-export const renderErrors = (elements, error, i18n) => {
+const renderErrors = (elements, watchedState, i18n) => {
+  const { form: { validation: { error } } } = watchedState;
   elements.feedbackEl.classList.replace('text-success', 'text-danger');
   elements.feedbackEl.textContent = i18n.t(`${error}`);
   elements.RSSinput.classList.add('is-invalid');
 };
 
-export const handleProcessState = (elements, watchedState, processState, i18n) => {
+const handleProcessState = (elements, watchedState, i18n) => {
+  const { form: { process: { state: processState } } } = watchedState;
   const {
     RSSinput, submitBtn, feedbackEl, RSSfeedsEl, RSSpostsEl,
   } = elements;
@@ -141,3 +145,24 @@ export const handleProcessState = (elements, watchedState, processState, i18n) =
       throw new Error(`Unknown process state: ${processState}`);
   }
 };
+
+const createWatchedState = (state, elements, i18n) => {
+  const watchedState = onChange(state, (path) => {
+    switch (path) {
+      case 'form.validation.error':
+        renderErrors(elements, watchedState, i18n);
+        break;
+
+      case 'form.process.state':
+        handleProcessState(elements, watchedState, i18n);
+        break;
+
+      default:
+        break;
+    }
+  });
+
+  return watchedState;
+};
+
+export { createWatchedState, handleProcessState };
