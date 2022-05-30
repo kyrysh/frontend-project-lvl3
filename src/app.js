@@ -40,27 +40,13 @@ export default (i18n) => {
 
     const loadedFeedsUrls = watchedState.loadedRSSfeeds.feeds.map((feed) => feed.URL);
 
-    const errors = validate(enteredURL, loadedFeedsUrls);
-    errors
-      .then((errs) => {
-        watchedState.form.validation.error = errs.join(', ');
+    validate(enteredURL, loadedFeedsUrls)
+      .then((validURL) => {
+        loadInitial(validURL, watchedState);
+        loadTimer(watchedState);
       })
-
-      .then(() => {
-        if (watchedState.form.validation.error.length === 0) {
-          watchedState.form.process.state = 'initial';
-          loadInitial(enteredURL, watchedState);
-          loadTimer(watchedState, elements, i18n);
-        }
-      })
-
-      .catch((error) => {
-        if (error.response || error.request) {
-          watchedState.form.process.error = 'feedbackMsg.processState.networkError';
-        } else {
-          watchedState.form.process.error = 'feedbackMsg.processState.notValid';
-        }
-        watchedState.form.process.state = 'failed';
+      .catch((err) => {
+        watchedState.form.validation.error = err.message;
       });
   });
 };

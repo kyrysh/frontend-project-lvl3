@@ -29,6 +29,15 @@ const loadInitial = (enteredURL, watchedState) => {
         watchedState.loadedRSSfeeds.posts.push(post);
       });
       watchedState.form.process.state = 'loaded';
+    })
+
+    .catch((error) => {
+      if (error.response || error.request) {
+        watchedState.form.process.error = 'feedbackMsg.processState.networkError';
+      } else {
+        watchedState.form.process.error = 'feedbackMsg.processState.notValid';
+      }
+      watchedState.form.process.state = 'failed';
     });
 };
 

@@ -13,9 +13,15 @@ export default (value, setOfValues) => {
 
   const schema = yup.string().required().url().notOneOf(setOfValues);
 
-  const errors = schema
+  try {
+    return schema.validate(value);
+  } catch (err) {
+    return err;
+  }
+
+  /* const errors = schema
     .validate(value)
     .then(() => [])
     .catch((err) => err.errors);
-  return errors;
+  return errors; */
 };
