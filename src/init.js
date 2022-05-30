@@ -1,14 +1,12 @@
 import i18n from 'i18next';
-import ru from './locales/ru.js';
+import resources from './locales/index.js';
 import app from './app.js';
 
 export default () => {
   const i18nInstance = i18n.createInstance();
   i18nInstance.init({
-    lng: 'ru',
+    lng: 'en',
     debug: true,
-    resources: {
-      ru,
-    },
+    resources,
   }).then(app(i18nInstance));
 };

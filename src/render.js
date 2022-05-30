@@ -19,11 +19,9 @@ const createRSSelementsContainer = (RSSEl, header) => {
   return ulElement;
 };
 
-const showFeedsAndPosts = (feedsEl, postsEl, loadedFeeds, loadedPosts, readedPosts) => {
+const showFeeds = (feedsEl, loadedFeeds) => {
   feedsEl.innerHTML = '';
-  postsEl.innerHTML = '';
   const ulFeedsContainer = createRSSelementsContainer(feedsEl, 'Фиды');
-  const ulPostsContainer = createRSSelementsContainer(postsEl, 'Посты');
 
   const feeds = loadedFeeds.map(({ title, description }) => {
     const liEl = document.createElement('li');
@@ -44,6 +42,16 @@ const showFeedsAndPosts = (feedsEl, postsEl, loadedFeeds, loadedPosts, readedPos
   });
 
   ulFeedsContainer.prepend(...feeds);
+};
+
+const showPosts = (elements, watchedState) => {
+  const postsEl = elements.RSSpostsEl;
+
+  const loadedPosts = watchedState.loadedRSSfeeds.posts;
+  const readedPosts = watchedState.UIstate.readedPostsURLs;
+
+  postsEl.innerHTML = '';
+  const ulPostsContainer = createRSSelementsContainer(postsEl, 'Посты');
 
   const posts = loadedPosts.map(({ URL, title, description }) => {
     const liEl = document.createElement('li');
@@ -104,12 +112,12 @@ const renderErrors = (elements, watchedState, i18n) => {
 const handleProcessState = (elements, watchedState, i18n) => {
   const { form: { process: { state: processState } } } = watchedState;
   const {
-    RSSinput, submitBtn, feedbackEl, RSSfeedsEl, RSSpostsEl,
+    RSSinput, submitBtn, feedbackEl, RSSfeedsEl,
   } = elements;
 
   const loadedFeeds = watchedState.loadedRSSfeeds.feeds;
-  const loadedPosts = watchedState.loadedRSSfeeds.posts;
-  const readedPosts = watchedState.UIstate.readedPostsURLs;
+  // const loadedPosts = watchedState.loadedRSSfeeds.posts;
+  // const readedPosts = watchedState.UIstate.readedPostsURLs;
 
   switch (processState) {
     case 'loaded':
@@ -121,7 +129,8 @@ const handleProcessState = (elements, watchedState, i18n) => {
       feedbackEl.classList.replace('text-info', 'text-success');
       feedbackEl.textContent = i18n.t('feedbackMsg.processState.success');
 
-      showFeedsAndPosts(RSSfeedsEl, RSSpostsEl, loadedFeeds, loadedPosts, readedPosts);
+      showFeeds(RSSfeedsEl, loadedFeeds);
+      showPosts(elements, watchedState);
       break;
 
     case 'loading':
@@ -155,6 +164,10 @@ const createWatchedState = (state, elements, i18n) => {
 
       case 'form.process.state':
         handleProcessState(elements, watchedState, i18n);
+        break;
+
+      case 'loadedRSSfeeds.posts':
+        showPosts(elements, watchedState);
         break;
 
       default:

@@ -1,31 +1,18 @@
-const parseFeed = (parsedResponse) => {
-  const title = parsedResponse.querySelector('title').textContent;
-  const description = parsedResponse.querySelector('description').textContent;
-  return { title, description };
-};
-
-const parsePosts = (parsedResponse) => {
-  const parsedPosts = parsedResponse.querySelectorAll('item');
-  const posts = [];
-
-  parsedPosts.forEach((parsedPost) => {
-    const post = {
-      URL: parsedPost.querySelector('link').textContent,
-      title: parsedPost.querySelector('title').textContent,
-      description: parsedPost.querySelector('description').textContent,
-    };
-    posts.push(post);
-  });
-
-  return posts;
-};
-
-export default (response) => {
+export default (string) => {
   const parser = new DOMParser();
-  const parsedResponse = parser.parseFromString(response.data.contents, 'text/xml');
+  const parsedData = parser.parseFromString(string.data.contents, 'text/xml');
 
-  const parsedFeed = parseFeed(parsedResponse);
-  const parsedPosts = parsePosts(parsedResponse);
+  const title = parsedData.querySelector('title').textContent;
+  const description = parsedData.querySelector('description').textContent;
 
-  return { parsedFeed, parsedPosts };
+  const parsedItems = parsedData.querySelectorAll('item');
+
+  const items = Array.from(parsedItems)
+    .map((parsedItem) => ({
+      link: parsedItem.querySelector('link').textContent,
+      title: parsedItem.querySelector('title').textContent,
+      description: parsedItem.querySelector('description').textContent,
+    }));
+
+  return { title, description, items };
 };

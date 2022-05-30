@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-export default (field, urls) => {
+export default (value, setOfValues) => {
   yup.setLocale({
     mixed: {
       required: () => 'feedbackMsg.validation.empty',
@@ -11,10 +11,10 @@ export default (field, urls) => {
     },
   });
 
-  const schema = yup.string().required().url().notOneOf(urls);
+  const schema = yup.string().required().url().notOneOf(setOfValues);
 
   const errors = schema
-    .validate(field)
+    .validate(value)
     .then(() => [])
     .catch((err) => err.errors);
   return errors;

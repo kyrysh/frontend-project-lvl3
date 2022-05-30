@@ -1,8 +1,6 @@
-import axios from 'axios';
-import _ from 'lodash';
 import validate from './validator.js';
-import { createWatchedState, handleProcessState } from './render.js';
-import parseURL from './parser.js';
+import { createWatchedState } from './render.js';
+import { loadInitial, loadTimer } from './loader.js';
 
 export default (i18n) => {
   const elements = {
@@ -20,7 +18,7 @@ export default (i18n) => {
         error: '',
       },
       process: {
-        state: '',
+        state: 'initial',
         error: '',
       },
     },
@@ -37,6 +35,7 @@ export default (i18n) => {
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
+    watchedState.form.process.state = 'initial';
     const data = new FormData(e.target);
     const enteredURL = data.get('url');
 
@@ -50,75 +49,19 @@ export default (i18n) => {
 
       .then(() => {
         if (watchedState.form.validation.error.length === 0) {
-          watchedState.form.process.state = 'loading';
-          watchedState.form.process.error = '';
-
-          axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(enteredURL)}`)
-
-            .then((response) => {
-              const { parsedFeed, parsedPosts } = parseURL(response);
-
-              const feed = {
-                id: _.uniqueId(),
-                URL: enteredURL,
-                title: parsedFeed.title,
-                description: parsedFeed.description,
-              };
-              watchedState.loadedRSSfeeds.feeds.push(feed);
-
-              parsedPosts.forEach((parsedPost) => {
-                const post = {
-                  feedId: feed.id,
-                  URL: parsedPost.URL,
-                  title: parsedPost.title,
-                  description: parsedPost.description,
-                };
-                watchedState.loadedRSSfeeds.posts.push(post);
-              });
-              watchedState.form.process.state = 'loaded';
-
-              setTimeout(function updatePosts() {
-                const feedsURLs = _.map(watchedState.loadedRSSfeeds.feeds, 'URL');
-
-                feedsURLs.forEach((feedURL) => {
-                  axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(feedURL)}`)
-
-                    .then((responseTimer) => {
-                      const parsedPostsTimer = parseURL(responseTimer).parsedPosts;
-
-                      parsedPostsTimer.forEach((parsedPostTimer) => {
-                        const newParsedPostURL = parsedPostTimer.URL;
-
-                        if (_.find(watchedState.loadedRSSfeeds.posts, ['URL', newParsedPostURL])) {
-                          return;
-                        }
-
-                        const newPost = {
-                          feedId: feed.id,
-                          URL: newParsedPostURL,
-                          title: parsedPostTimer.title,
-                          description: parsedPostTimer.description,
-                        };
-
-                        watchedState.loadedRSSfeeds.posts.push(newPost);
-                        handleProcessState(elements, watchedState, i18n);
-                      });
-                    });
-                });
-
-                setTimeout(updatePosts, 5000);
-              }, 5000);
-            })
-
-            .catch((error) => {
-              if (error.response || error.request) {
-                watchedState.form.process.error = 'feedbackMsg.processState.networkError';
-              } else {
-                watchedState.form.process.error = 'feedbackMsg.processState.notValid';
-              }
-              watchedState.form.process.state = 'failed';
-            });
+          watchedState.form.process.state = 'initial';
+          loadInitial(enteredURL, watchedState);
+          loadTimer(watchedState, elements, i18n);
         }
+      })
+
+      .catch((error) => {
+        if (error.response || error.request) {
+          watchedState.form.process.error = 'feedbackMsg.processState.networkError';
+        } else {
+          watchedState.form.process.error = 'feedbackMsg.processState.notValid';
+        }
+        watchedState.form.process.state = 'failed';
       });
   });
 };
