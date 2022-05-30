@@ -178,4 +178,4 @@ const createWatchedState = (state, elements, i18n) => {
   return watchedState;
 };
 
-export { createWatchedState, handleProcessState };
+export default createWatchedState;

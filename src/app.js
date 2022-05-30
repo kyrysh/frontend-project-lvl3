@@ -1,5 +1,5 @@
 import validate from './validator.js';
-import { createWatchedState } from './render.js';
+import createWatchedState from './render.js';
 import { loadInitial, loadTimer } from './loader.js';
 
 export default (i18n) => {
@@ -35,7 +35,6 @@ export default (i18n) => {
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
-    watchedState.form.process.state = 'initial';
     const data = new FormData(e.target);
     const enteredURL = data.get('url');
 
