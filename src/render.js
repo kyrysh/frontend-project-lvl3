@@ -53,7 +53,7 @@ const showPosts = (elements, watchedState) => {
   postsEl.innerHTML = '';
   const ulPostsContainer = createRSSelementsContainer(postsEl, 'Посты');
 
-  const posts = loadedPosts.map(({ URL, title, description }) => {
+  const posts = loadedPosts.map(({ URL, title }) => {
     const liEl = document.createElement('li');
     liEl.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
@@ -96,7 +96,6 @@ const renderReadedPosts = (watchedState, val) => {
   console.log(val);
 
   const readedPost = watchedState.loadedRSSfeeds.posts.find((post) => post.URL === `${val}`);
-  // console.log(readedPost);
 
   const readedAelement = document.querySelector(`a[href="${readedPost.URL}"]`);
   readedAelement.classList.remove('fw-bold');
