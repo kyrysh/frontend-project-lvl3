@@ -42,36 +42,35 @@ const loadInitial = (enteredURL, watchedState) => {
 };
 
 const loadTimer = (watchedState) => {
-  setTimeout(function updatePosts() {
-    const feedsURLs = _.map(watchedState.loadedRSSfeeds.feeds, 'URL');
+  const interval = 5000;
+  const feedsURLs = _.map(watchedState.loadedRSSfeeds.feeds, 'URL');
 
-    feedsURLs.forEach((feedURL) => {
-      axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(feedURL)}`)
+  const promises = feedsURLs.map((feedURL) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(feedURL)}`));
 
-        .then((responseTimer) => {
-          const itemsTimer = parseURL(responseTimer).items;
+  Promise.all(promises)
+    .then((responses) => {
+      responses.forEach((response) => {
+        console.log(response.status);
+        const posts = parseURL(response).items;
+        posts.forEach((post) => {
+          const postURL = post.link;
 
-          itemsTimer.forEach((itemTimer) => {
-            const newItemURL = itemTimer.link;
+          if (_.find(watchedState.loadedRSSfeeds.posts, ['URL', postURL])) {
+            return;
+          }
 
-            if (_.find(watchedState.loadedRSSfeeds.posts, ['URL', newItemURL])) {
-              return;
-            }
-
-            const newPost = {
-              feedId: watchedState.loadedRSSfeeds.feeds.id,
-              URL: newItemURL,
-              title: itemTimer.title,
-              description: itemTimer.description,
-            };
-
-            watchedState.loadedRSSfeeds.posts.push(newPost);
-          });
+          const newPost = {
+            feedId: watchedState.loadedRSSfeeds.feeds.id,
+            URL: postURL,
+            title: post.title,
+            description: post.description,
+          };
+          watchedState.loadedRSSfeeds.posts.push(newPost);
         });
+      });
     });
 
-    setTimeout(updatePosts, 5000);
-  }, 5000);
+  setTimeout(() => loadTimer(watchedState), interval);
 };
 
 export { loadInitial, loadTimer };

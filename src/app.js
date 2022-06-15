@@ -27,6 +27,7 @@ export default (i18n) => {
       posts: [], // { feedId: '', URL: '', title: '', description: '' }
     },
     UIstate: {
+      readedPost: '',
       readedPostsURLs: [],
     },
   };
@@ -43,10 +44,11 @@ export default (i18n) => {
     validate(enteredURL, loadedFeedsUrls)
       .then((validURL) => {
         loadInitial(validURL, watchedState);
-        loadTimer(watchedState);
       })
       .catch((err) => {
         watchedState.form.validation.error = err.message;
       });
   });
+
+  loadTimer(watchedState);
 };

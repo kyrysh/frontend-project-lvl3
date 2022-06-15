@@ -64,11 +64,10 @@ const showPosts = (elements, watchedState) => {
     aEl.setAttribute('rel', 'noopener noreferrer');
     aEl.textContent = `${title}`;
     aEl.addEventListener('click', () => {
+      watchedState.UIstate.readedPost = `${aEl.href}`;
       if (!readedPosts.includes(aEl.href)) {
         readedPosts.push(aEl.href);
       }
-      aEl.classList.remove('fw-bold');
-      aEl.classList.add('fw-normal', 'link-secondary');
     });
 
     const btn = document.createElement('button');
@@ -78,19 +77,10 @@ const showPosts = (elements, watchedState) => {
     btn.setAttribute('data-bs-target', '#modal');
     btn.textContent = 'Просмотр';
     btn.addEventListener('click', () => {
+      watchedState.UIstate.readedPost = `${URL}`;
       if (!readedPosts.includes(URL)) {
         readedPosts.push(URL);
       }
-      aEl.classList.remove('fw-bold');
-      aEl.classList.add('fw-normal', 'link-secondary');
-
-      const modalTitle = document.querySelector('h5.modal-title');
-      const modalBody = document.querySelector('div.modal-body');
-      const fullAtricleBtn = document.querySelector('a.full-article');
-
-      modalTitle.textContent = `${title}`;
-      modalBody.textContent = `${description}`;
-      fullAtricleBtn.href = `${URL}`;
     });
 
     liEl.append(aEl);
@@ -100,6 +90,25 @@ const showPosts = (elements, watchedState) => {
   });
 
   ulPostsContainer.prepend(...posts);
+};
+
+const renderReadedPosts = (watchedState, val) => {
+  console.log(val);
+
+  const readedPost = watchedState.loadedRSSfeeds.posts.find((post) => post.URL === `${val}`);
+  // console.log(readedPost);
+
+  const readedAelement = document.querySelector(`a[href="${readedPost.URL}"]`);
+  readedAelement.classList.remove('fw-bold');
+  readedAelement.classList.add('fw-normal', 'link-secondary');
+
+  const modalTitle = document.querySelector('h5.modal-title');
+  const modalBody = document.querySelector('div.modal-body');
+  const fullAtricleBtn = document.querySelector('a.full-article');
+
+  modalTitle.textContent = `${readedPost.title}`;
+  modalBody.textContent = `${readedPost.description}`;
+  fullAtricleBtn.href = `${readedPost.URL}`;
 };
 
 const renderErrors = (elements, watchedState, i18n) => {
@@ -116,8 +125,6 @@ const handleProcessState = (elements, watchedState, i18n) => {
   } = elements;
 
   const loadedFeeds = watchedState.loadedRSSfeeds.feeds;
-  // const loadedPosts = watchedState.loadedRSSfeeds.posts;
-  // const readedPosts = watchedState.UIstate.readedPostsURLs;
 
   switch (processState) {
     case 'loaded':
@@ -156,7 +163,7 @@ const handleProcessState = (elements, watchedState, i18n) => {
 };
 
 const createWatchedState = (state, elements, i18n) => {
-  const watchedState = onChange(state, (path) => {
+  const watchedState = onChange(state, (path, val) => {
     switch (path) {
       case 'form.validation.error':
         renderErrors(elements, watchedState, i18n);
@@ -168,6 +175,10 @@ const createWatchedState = (state, elements, i18n) => {
 
       case 'loadedRSSfeeds.posts':
         showPosts(elements, watchedState);
+        break;
+
+      case 'UIstate.readedPost':
+        renderReadedPosts(watchedState, val);
         break;
 
       default:
