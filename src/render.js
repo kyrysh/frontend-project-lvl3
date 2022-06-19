@@ -48,40 +48,29 @@ const showPosts = (elements, watchedState) => {
   const postsEl = elements.RSSpostsEl;
 
   const loadedPosts = watchedState.loadedRSSfeeds.posts;
-  const readedPosts = watchedState.UIstate.readedPostsURLs;
 
   postsEl.innerHTML = '';
   const ulPostsContainer = createRSSelementsContainer(postsEl, 'Посты');
 
-  const posts = loadedPosts.map(({ URL, title }) => {
+  const posts = loadedPosts.map(({ id, URL, title }) => {
     const liEl = document.createElement('li');
     liEl.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
     const aEl = document.createElement('a');
     aEl.classList.add('fw-bold');
     aEl.href = `${URL}`;
+    aEl.setAttribute('data-post-id', id);
     aEl.setAttribute('target', '_blank');
     aEl.setAttribute('rel', 'noopener noreferrer');
     aEl.textContent = `${title}`;
-    aEl.addEventListener('click', () => {
-      watchedState.UIstate.readedPost = `${aEl.href}`;
-      if (!readedPosts.includes(aEl.href)) {
-        readedPosts.push(aEl.href);
-      }
-    });
 
     const btn = document.createElement('button');
     btn.classList.add('btn', 'btn-outline-primary', 'btn-sm');
     btn.setAttribute('data-id', '2');
     btn.setAttribute('data-bs-toggle', 'modal');
     btn.setAttribute('data-bs-target', '#modal');
+    btn.setAttribute('data-post-id', id);
     btn.textContent = 'Просмотр';
-    btn.addEventListener('click', () => {
-      watchedState.UIstate.readedPost = `${URL}`;
-      if (!readedPosts.includes(URL)) {
-        readedPosts.push(URL);
-      }
-    });
 
     liEl.append(aEl);
     liEl.append(btn);
@@ -93,11 +82,9 @@ const showPosts = (elements, watchedState) => {
 };
 
 const renderReadedPosts = (watchedState, val) => {
-  console.log(val);
+  const readedPost = watchedState.loadedRSSfeeds.posts.find((post) => post.id === `${val}`);
 
-  const readedPost = watchedState.loadedRSSfeeds.posts.find((post) => post.URL === `${val}`);
-
-  const readedAelement = document.querySelector(`a[href="${readedPost.URL}"]`);
+  const readedAelement = document.querySelector(`[data-post-id="${readedPost.id}"]`);
   readedAelement.classList.remove('fw-bold');
   readedAelement.classList.add('fw-normal', 'link-secondary');
 

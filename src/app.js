@@ -24,11 +24,11 @@ export default (i18n) => {
     },
     loadedRSSfeeds: {
       feeds: [], // { id: uniqueId(), URL: '', title: '', description: '' }
-      posts: [], // { feedId: '', URL: '', title: '', description: '' }
+      posts: [], // { feedId: '', id: '', URL: '', title: '', description: '' }
     },
     UIstate: {
       readedPost: '',
-      readedPostsURLs: [],
+      readedPostsIDs: [],
     },
   };
 
@@ -48,6 +48,19 @@ export default (i18n) => {
       .catch((err) => {
         watchedState.form.validation.error = err.message;
       });
+  });
+
+  elements.RSSpostsEl.addEventListener('click', (e) => {
+    const clickedEl = e.target;
+    const id = clickedEl.dataset.postId;
+    console.log(clickedEl);
+    console.log(id);
+    if (id && !watchedState.UIstate.readedPostsIDs.includes(id)) {
+      watchedState.UIstate.readedPost = `${id}`;
+      watchedState.UIstate.readedPostsIDs.push(id);
+      console.log(watchedState.UIstate.readedPost);
+      console.log(watchedState.UIstate.readedPostsIDs);
+    }
   });
 
   loadTimer(watchedState);

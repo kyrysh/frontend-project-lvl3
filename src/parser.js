@@ -9,6 +9,7 @@ export default (string) => {
 
   const items = Array.from(parsedItems)
     .map((parsedItem) => ({
+      id: parsedItem.querySelector('guid').textContent,
       link: parsedItem.querySelector('link').textContent,
       title: parsedItem.querySelector('title').textContent,
       description: parsedItem.querySelector('description').textContent,

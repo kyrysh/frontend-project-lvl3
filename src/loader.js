@@ -22,6 +22,7 @@ const loadInitial = (enteredURL, watchedState) => {
       items.forEach((item) => {
         const post = {
           feedId: feed.id,
+          id: item.id,
           URL: item.link,
           title: item.title,
           description: item.description,
@@ -50,7 +51,7 @@ const loadTimer = (watchedState) => {
   Promise.all(promises)
     .then((responses) => {
       responses.forEach((response) => {
-        console.log(response.status);
+        // console.log(response.status);
         const posts = parseURL(response).items;
         posts.forEach((post) => {
           const postURL = post.link;
@@ -61,6 +62,7 @@ const loadTimer = (watchedState) => {
 
           const newPost = {
             feedId: watchedState.loadedRSSfeeds.feeds.id,
+            id: post.id,
             URL: postURL,
             title: post.title,
             description: post.description,
@@ -68,9 +70,11 @@ const loadTimer = (watchedState) => {
           watchedState.loadedRSSfeeds.posts.push(newPost);
         });
       });
-    });
+    })
 
-  setTimeout(() => loadTimer(watchedState), interval);
+    .finally(() => {
+      setTimeout(() => loadTimer(watchedState), interval);
+    });
 };
 
 export { loadInitial, loadTimer };
