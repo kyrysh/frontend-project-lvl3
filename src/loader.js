@@ -51,19 +51,18 @@ const loadTimer = (watchedState) => {
   Promise.all(promises)
     .then((responses) => {
       responses.forEach((response) => {
-        // console.log(response.status);
         const posts = parseURL(response).items;
         posts.forEach((post) => {
-          const postURL = post.link;
+          const postID = post.id;
 
-          if (_.find(watchedState.loadedRSSfeeds.posts, ['URL', postURL])) {
+          if (_.find(watchedState.loadedRSSfeeds.posts, ['id', postID])) {
             return;
           }
 
           const newPost = {
             feedId: watchedState.loadedRSSfeeds.feeds.id,
-            id: post.id,
-            URL: postURL,
+            id: postID,
+            URL: post.link,
             title: post.title,
             description: post.description,
           };

@@ -48,6 +48,7 @@ const showPosts = (elements, watchedState) => {
   const postsEl = elements.RSSpostsEl;
 
   const loadedPosts = watchedState.loadedRSSfeeds.posts;
+  const { readedPostsIDs } = watchedState.UIstate;
 
   postsEl.innerHTML = '';
   const ulPostsContainer = createRSSelementsContainer(postsEl, 'Посты');
@@ -57,8 +58,9 @@ const showPosts = (elements, watchedState) => {
     liEl.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
     const aEl = document.createElement('a');
-    aEl.classList.add('fw-bold');
+    const actualClass = readedPostsIDs.includes(id) ? 'fw-normal link-secondary' : 'fw-bold';
     aEl.href = `${URL}`;
+    aEl.setAttribute('class', actualClass);
     aEl.setAttribute('data-post-id', id);
     aEl.setAttribute('target', '_blank');
     aEl.setAttribute('rel', 'noopener noreferrer');

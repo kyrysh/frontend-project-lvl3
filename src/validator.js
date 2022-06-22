@@ -18,10 +18,4 @@ export default (value, setOfValues) => {
   } catch (err) {
     return err;
   }
-
-  /* const errors = schema
-    .validate(value)
-    .then(() => [])
-    .catch((err) => err.errors);
-  return errors; */
 };

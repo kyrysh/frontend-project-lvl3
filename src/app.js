@@ -8,8 +8,8 @@ export default (i18n) => {
     RSSinput: document.getElementById('url-input'),
     submitBtn: document.querySelector('button[type = "submit"]'),
     feedbackEl: document.querySelector('p.feedback'),
-    RSSfeedsEl: document.querySelector('div.feeds'),
-    RSSpostsEl: document.querySelector('div.posts'),
+    RSSfeedsEl: document.querySelector('.feeds'),
+    RSSpostsEl: document.querySelector('.posts'),
   };
 
   const state = {
@@ -53,13 +53,10 @@ export default (i18n) => {
   elements.RSSpostsEl.addEventListener('click', (e) => {
     const clickedEl = e.target;
     const id = clickedEl.dataset.postId;
-    console.log(clickedEl);
-    console.log(id);
+
     if (id && !watchedState.UIstate.readedPostsIDs.includes(id)) {
-      watchedState.UIstate.readedPost = `${id}`;
+      watchedState.UIstate.readedPost = id;
       watchedState.UIstate.readedPostsIDs.push(id);
-      console.log(watchedState.UIstate.readedPost);
-      console.log(watchedState.UIstate.readedPostsIDs);
     }
   });
 
